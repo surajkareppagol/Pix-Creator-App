@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -31,15 +33,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public String templateFillLine = "";
     public String svgFileData = "";
     public int lineCounter = 0;
-
     public String[] svgPixelColors = {"#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc", "#ffcccccc"};
+    ArrayList<Integer> currentPaintedPixels = new ArrayList<Integer>();
 
     public void setSelectedColor(int id) {
-        System.out.println("Inside setColor");
         findViewById(R.id.brushTool).setBackgroundColor(toolColor);
         findViewById(R.id.paintTool).setBackgroundColor(toolColor);
         findViewById(R.id.eraserTool).setBackgroundColor(toolColor);
         findViewById(R.id.saveTool).setBackgroundColor(toolColor);
+        findViewById(R.id.resetTool).setBackgroundColor(toolColor);
         findViewById(id).setBackgroundColor(selectedColor);
     }
 
@@ -72,12 +74,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             throw new RuntimeException(e);
         }
     }
+
     public void exportFile(String svgFileData) {
         try {
             ContentValues values = new ContentValues();
             values.put(MediaStore.MediaColumns.DISPLAY_NAME, "output");
-            values.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain");
-            values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS + "/svg");
+            values.put(MediaStore.MediaColumns.MIME_TYPE, "image/svg+xml");
+            values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS + "/PixCreator/Output");
             Uri uri = getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
             OutputStream outputStream = getContentResolver().openOutputStream(uri);
             outputStream.write(svgFileData.getBytes());
@@ -85,8 +88,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             Toast.makeText(this, "File created successfully", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            Toast.makeText(this, "Fail to create file", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Failed to create file", Toast.LENGTH_SHORT).show();
         }
+
+        clearTemplate();
     }
 
     public void insertColor(int index) {
@@ -109,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (currentColor == Color.rgb(160, 32, 240)) {
             svgPixelColors[index] = "#a020f0ff";
         } else if (currentColor == Color.rgb(0, 255, 255)) {
-            svgPixelColors[index] = "##00ffffff";
+            svgPixelColors[index] = "#00ffffff";
         } else if (currentColor == Color.rgb(255, 0, 255)) {
             svgPixelColors[index] = "#ff00ffff";
         } else if (currentColor == Color.rgb(128, 128, 128)) {
@@ -127,6 +132,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             currentColor = Color.LTGRAY;
         }
         insertColor(index - 1);
+        currentPaintedPixels.add(id);
+    }
+
+    public void clearTemplate(){
+        for(int i = 0; i < currentPaintedPixels.size(); i++)
+            findViewById(currentPaintedPixels.get(i)).setBackgroundColor(eraseColor);
+        currentPaintedPixels.clear();
     }
 
     @Override
@@ -187,101 +199,107 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             currentTool = "save";
             setSelectedColor(R.id.saveTool);
             createSvgData();
+        }else if(id == R.id.resetTool){
+            currentTool = "reset";
+            setSelectedColor(R.id.resetTool);
+            clearTemplate();
         }
 
         /* PIXELS */
+
+        /* Indexing is different because the rows columns are considered as rows in file */
 
         /* ROW 1 */
         else if (id == R.id.colorBox1) {
             paintPixel(R.id.colorBox1, 1);
         } else if (id == R.id.colorBox2) {
-            paintPixel(R.id.colorBox2, 2);
+            paintPixel(R.id.colorBox2, 7);
         } else if (id == R.id.colorBox3) {
-            paintPixel(R.id.colorBox3, 3);
+            paintPixel(R.id.colorBox3, 13);
         } else if (id == R.id.colorBox4) {
-            paintPixel(R.id.colorBox4, 4);
+            paintPixel(R.id.colorBox4, 19);
         } else if (id == R.id.colorBox5) {
-            paintPixel(R.id.colorBox5, 5);
+            paintPixel(R.id.colorBox5, 25);
         } else if (id == R.id.colorBox6) {
-            paintPixel(R.id.colorBox6, 6);
+            paintPixel(R.id.colorBox6, 31);
         }
 
         /* ROW 2 */
 
         else if (id == R.id.colorBox7) {
-            paintPixel(R.id.colorBox7, 7);
+            paintPixel(R.id.colorBox7, 2);
         } else if (id == R.id.colorBox8) {
             paintPixel(R.id.colorBox8, 8);
         } else if (id == R.id.colorBox9) {
-            paintPixel(R.id.colorBox9, 9);
+            paintPixel(R.id.colorBox9, 14);
         } else if (id == R.id.colorBox10) {
-            paintPixel(R.id.colorBox10, 10);
+            paintPixel(R.id.colorBox10, 20);
         } else if (id == R.id.colorBox11) {
-            paintPixel(R.id.colorBox11, 11);
+            paintPixel(R.id.colorBox11, 26);
         } else if (id == R.id.colorBox12) {
-            paintPixel(R.id.colorBox12, 12);
+            paintPixel(R.id.colorBox12, 32);
         }
 
         /* ROW 3 */
 
         else if (id == R.id.colorBox13) {
-            paintPixel(R.id.colorBox13, 13);
+            paintPixel(R.id.colorBox13, 3);
         } else if (id == R.id.colorBox14) {
-            paintPixel(R.id.colorBox14, 14);
+            paintPixel(R.id.colorBox14, 9);
         } else if (id == R.id.colorBox15) {
             paintPixel(R.id.colorBox15, 15);
         } else if (id == R.id.colorBox16) {
-            paintPixel(R.id.colorBox16, 16);
+            paintPixel(R.id.colorBox16, 21);
         } else if (id == R.id.colorBox17) {
-            paintPixel(R.id.colorBox17, 17);
+            paintPixel(R.id.colorBox17, 27);
         } else if (id == R.id.colorBox18) {
-            paintPixel(R.id.colorBox18, 18);
+            paintPixel(R.id.colorBox18, 33);
         }
 
         /* ROW 4 */
 
         else if (id == R.id.colorBox19) {
-            paintPixel(R.id.colorBox19, 19);
+            paintPixel(R.id.colorBox19, 4);
         } else if (id == R.id.colorBox20) {
-            paintPixel(R.id.colorBox20, 20);
+            paintPixel(R.id.colorBox20, 10);
         } else if (id == R.id.colorBox21) {
-            paintPixel(R.id.colorBox21, 21);
+            paintPixel(R.id.colorBox21, 16);
         } else if (id == R.id.colorBox22) {
             paintPixel(R.id.colorBox22, 22);
         } else if (id == R.id.colorBox23) {
-            paintPixel(R.id.colorBox23, 23);
+            paintPixel(R.id.colorBox23, 28);
         } else if (id == R.id.colorBox24) {
-            paintPixel(R.id.colorBox24, 24);
+            paintPixel(R.id.colorBox24, 34);
         }
 
         /* ROW 5 */
 
         else if (id == R.id.colorBox25) {
-            paintPixel(R.id.colorBox25, 25);
+            paintPixel(R.id.colorBox25, 5);
         } else if (id == R.id.colorBox26) {
-            paintPixel(R.id.colorBox26, 26);
+            paintPixel(R.id.colorBox26, 11);
         } else if (id == R.id.colorBox27) {
-            paintPixel(R.id.colorBox27, 27);
+            paintPixel(R.id.colorBox27, 17);
         } else if (id == R.id.colorBox28) {
-            paintPixel(R.id.colorBox28, 28);
+            paintPixel(R.id.colorBox28, 23);
         } else if (id == R.id.colorBox29) {
             paintPixel(R.id.colorBox29, 29);
         } else if (id == R.id.colorBox30) {
-            paintPixel(R.id.colorBox30, 30);
+            paintPixel(R.id.colorBox30, 35);
         }
 
         /* ROW 6 */
 
         else if (id == R.id.colorBox31) {
-            paintPixel(R.id.colorBox31, 31);
+            paintPixel(R.id.colorBox31, 6);
         } else if (id == R.id.colorBox32) {
-            paintPixel(R.id.colorBox32, 32);
+            paintPixel(R.id.colorBox32, 12);
         } else if (id == R.id.colorBox33) {
-            paintPixel(R.id.colorBox33, 33);
+            paintPixel(R.id.colorBox33, 18);
         } else if (id == R.id.colorBox34) {
-            paintPixel(R.id.colorBox34, 34);
+            paintPixel(R.id.colorBox34, 24);
         } else if (id == R.id.colorBox35) {
-            paintPixel(R.id.colorBox35, 35);
+            paintPixel(R.id.colorBox35, 30);
         } else if (id == R.id.colorBox36) {
             paintPixel(R.id.colorBox36, 36);
         }
@@ -349,6 +367,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ImageButton btnSaveTool = findViewById(R.id.saveTool);
         btnSaveTool.setOnClickListener((this));
+
+        ImageButton btnResetTool = findViewById(R.id.resetTool);
+        btnResetTool.setOnClickListener(this);
 
         /* PIXELS */
 

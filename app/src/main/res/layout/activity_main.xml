@@ -49,13 +49,23 @@
                 android:src="@drawable/ic_erase" />
 
             <ImageButton
-                android:id="@+id/saveTool"
+                android:id="@+id/resetTool"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="180dp"
                 android:background="#191716"
                 android:padding="10dp"
+                android:src="@drawable/ic_reset" />
+
+            <ImageButton
+                android:id="@+id/saveTool"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="240dp"
+                android:background="#191716"
+                android:padding="10dp"
                 android:src="@drawable/ic_save" />
+
         </RelativeLayout>
     </RelativeLayout>
 
