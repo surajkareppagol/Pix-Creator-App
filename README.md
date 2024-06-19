@@ -4,8 +4,8 @@ It is a simple pixel art creator built for android, the current template size is
 
 ## App Screenshots
 
-![home](assets/1.png)
+![home](https://raw.githubusercontent.com/surajkareppagol/Assets/main/23%20-%20Pix-Creator-App/1.png)
 
-![draw](assets/2.png)
+![draw](https://raw.githubusercontent.com/surajkareppagol/Assets/main/23%20-%20Pix-Creator-App/2.png)
 
-![draw](assets/3.png)
+![draw](https://raw.githubusercontent.com/surajkareppagol/Assets/main/23%20-%20Pix-Creator-App/3.png)
